@@ -64,9 +64,11 @@ QString ScreenToolsController::fixedFontFamily()
 
 QString ScreenToolsController::normalFontFamily()
 {
-    //-- See App.SettinsGroup.json for index
-    const int langID = SettingsManager::instance()->appSettings()->qLocaleLanguage()->rawValue().toInt();
-    if (langID == QLocale::Korean) {
+    const QLocale::Language language = qgcApp()->getCurrentLanguage().language();
+    if (language == QLocale::Chinese) {
+        return QStringLiteral("Noto Sans CJK SC");
+    }
+    if (language == QLocale::Korean) {
         return QStringLiteral("NanumGothic");
     }
 

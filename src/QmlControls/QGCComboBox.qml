@@ -9,6 +9,7 @@ import QGroundControl.Controls
 T.ComboBox {
     property bool sizeToContents: false
     property string alternateText: ""
+    property string translationContext: ""
 
     id: control
     padding: ScreenTools.comboBoxPadding
@@ -44,11 +45,15 @@ T.ComboBox {
         font.pointSize: control.font.pointSize
     }
 
+    function translatedText(value) {
+        return translationContext === "" ? value : qsTranslate(translationContext, value)
+    }
+
     function _calcPopupWidth() {
         if (_onCompleted && sizeToContents && control.count > 0) {
             _largestTextWidth = 0
             for (let i = 0; i < control.count; i++) {
-                textMetrics.text = control.textAt(i)
+                textMetrics.text = control.translatedText(control.textAt(i))
                 _largestTextWidth = Math.max(textMetrics.width, _largestTextWidth)
             }
             _popupWidth = _largestTextWidth + itemDelegateMetrics.leftPadding + itemDelegateMetrics.rightPadding
@@ -57,6 +62,7 @@ T.ComboBox {
 
     onModelChanged: _calcPopupWidth()
     onCountChanged: _calcPopupWidth()
+    onTranslationContextChanged: _calcPopupWidth()
 
     Component.onCompleted: {
         _onCompleted = true
@@ -75,11 +81,11 @@ T.ComboBox {
         TextMetrics {
             id: popupItemMetrics
             font: control.font
-            text: _text
+            text: control.translatedText(_text)
         }
 
         contentItem: Text {
-            text: _text
+            text: control.translatedText(_text)
             font: control.font
             color: control.currentIndex === index ? qgcPal.buttonHighlightText : qgcPal.buttonText
             verticalAlignment: Text.AlignVCenter
@@ -105,7 +111,7 @@ T.ComboBox {
     // The label of the button
     contentItem: QGCLabel {
         id: text
-        text: control.alternateText === "" ? control.currentText : control.alternateText
+        text: control.alternateText === "" ? control.translatedText(control.currentText) : control.alternateText
         font: control.font
         color: qgcPal.buttonText
         elide: Text.ElideRight

@@ -345,6 +345,8 @@ set_source_files_properties("${CMAKE_SOURCE_DIR}/resources/SplashScreen.png" PRO
 )
 
 set(QGC_FONT_RESOURCES
+    "${CMAKE_SOURCE_DIR}/resources/fonts/NotoSansCJK-LICENSE.txt"
+    "${CMAKE_SOURCE_DIR}/resources/fonts/NotoSansCJKsc-Regular.otf"
     "${CMAKE_SOURCE_DIR}/resources/fonts/OpenSans-Regular.ttf"
     "${CMAKE_SOURCE_DIR}/resources/fonts/OpenSans-Semibold.ttf"
     "${CMAKE_SOURCE_DIR}/resources/fonts/NanumGothic-Regular.ttf"

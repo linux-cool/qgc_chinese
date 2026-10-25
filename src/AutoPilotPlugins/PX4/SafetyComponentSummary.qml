@@ -21,18 +21,9 @@ Item {
     property Fact   _dataLossAction:    controller.getParameterFact(-1, "NAV_DLL_ACT")
     property Fact   _rtlLandDelayFact:  controller.getParameterFact(-1, "RTL_LAND_DELAY")
     property int    _rtlLandDelayValue: _rtlLandDelayFact ? _rtlLandDelayFact.value : 0
-    property var    _lowBattParts:      _lowBattAction ? _lowBattAction.enumStringValue.split(",") : []
-
-    function _cleanBehavior(str) {
-        if (!str) {
-            return ""
-        }
-        let cleaned = str.replace(/at\s+(critical|emergency)\s+level/gi, "").trim()
-        if (cleaned === "") {
-            return str.trim()
-        }
-        return cleaned.charAt(0).toUpperCase() + cleaned.slice(1)
-    }
+    // COM_LOW_BAT_ACT=3 returns at critical battery and lands at emergency battery.
+    // Use the parameter value because translated enum descriptions cannot be parsed as English.
+    readonly property bool _stagedBatteryAction: _lowBattAction ? Number(_lowBattAction.rawValue) === 3 : false
 
     ColumnLayout {
         id: mainLayout
@@ -41,19 +32,19 @@ Item {
 
         VehicleSummaryRow {
             labelText: qsTr("Low Battery Failsafe")
-            valueText: _lowBattParts.length > 1 ? "" : (_lowBattAction ? _lowBattAction.enumStringValue : "")
+            valueText: _stagedBatteryAction ? "" : (_lowBattAction ? _lowBattAction.enumStringValue : "")
         }
 
         VehicleSummaryRow {
-            visible:   _lowBattParts.length > 1
+            visible:   _stagedBatteryAction
             labelText: "  " + qsTr("Critical Level")
-            valueText: _lowBattParts.length > 0 ? _cleanBehavior(_lowBattParts[0]) : ""
+            valueText: qsTr("Return")
         }
 
         VehicleSummaryRow {
-            visible:   _lowBattParts.length > 1
+            visible:   _stagedBatteryAction
             labelText: "  " + qsTr("Emergency Level")
-            valueText: _lowBattParts.length > 1 ? _cleanBehavior(_lowBattParts[1]) : ""
+            valueText: qsTr("Land")
         }
 
         VehicleSummaryRow {

@@ -75,6 +75,31 @@ and uses the existing locked Python groups.
 
 Use the standard Qt `tr()` (C++) and `qsTr()` (QML) mechanisms.
 
+## Simplified Chinese audit
+
+The Chinese build defaults to `zh_CN` and includes a CJK font. Firmware parameter
+display names, descriptions, choices, and groups use `qgc_parameters_zh_CN.ts`.
+Parameter IDs, stored values, units, protocol constants, URLs, commands, and product
+model identifiers retain their original spelling. Intentional English-only entries
+carry a `[keep-en]` translator note.
+
+```bash
+uv run --directory tools --group scripts python -m translations.check_chinese \
+  --lupdate "$QT_ROOT_DIR/bin/lupdate"
+```
+
+This checks current JSON, embedded generated-page expressions, and C++/QML coverage, finished translations, UTF-8 replacement
+characters, technical identifiers and names, airframe names, URLs, and enum choice counts. Run the placeholder
+validator above as well. `AppSettingsTest` checks Chinese catalog loading, parameter
+value round-tripping, display-only combo translations, and bundled font glyphs.
+Pass `--apm-dir /path/to/ParameterRepository` to check the ArduPilot metadata snapshots
+used by the build. When firmware definitions change, update the parameter catalog as
+well. Map, airframe, and telemetry selectors translate their labels while retaining
+the original model values for configuration and protocol lookups.
+Known incoming flight-mode names use the `FlightModes` context. Mode selection
+keeps the received numeric mode IDs; unknown custom names retain their spelling.
+The Chinese test also checks translated mode selection and colliding display labels.
+
 ## Translating strings in JSON files
 
 QGC stores metadata in JSON files that also need translation. The

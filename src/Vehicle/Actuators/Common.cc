@@ -7,7 +7,7 @@ QGC_LOGGING_CATEGORY(CommonLog, "Vehicle.Actuators.Common")
 
 void Parameter::parse(const QJsonValue& jsonValue)
 {
-    label = jsonValue["label"].toString();
+    label = FactMetaData::translateDisplayText(jsonValue["label"].toString());
     name = jsonValue["name"].toString();
     indexOffset = jsonValue["index-offset"].toInt(0);
     QString displayOptionStr = jsonValue["show-as"].toString();

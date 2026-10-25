@@ -29,11 +29,11 @@ Item {
         }
         VehicleSummaryRow {
             labelText: qsTr("Airframe type")
-            valueText: autoStartSet ? controller.currentAirframeType : qsTr("Setup required")
+            valueText: autoStartSet ? qsTranslate("Airframe", controller.currentAirframeType) : qsTr("Setup required")
         }
         VehicleSummaryRow {
             labelText: qsTr("Vehicle")
-            valueText: autoStartSet ? controller.currentVehicleName : qsTr("Setup required")
+            valueText: autoStartSet ? qsTranslate("Airframe", controller.currentVehicleName) : qsTr("Setup required")
         }
 
         VehicleSummaryRow {

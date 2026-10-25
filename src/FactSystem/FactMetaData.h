@@ -124,13 +124,16 @@ public:
     QVariant rawDefaultValue() const;
     QVariant cookedDefaultValue() const { return _rawTranslator(rawDefaultValue()); }
     bool defaultValueAvailable() const { return _defaultValueAvailable; }
-    QStringList bitmaskStrings() const { return _bitmaskStrings; }
+
+    QStringList bitmaskStrings() const;
     QVariantList bitmaskValues() const { return _bitmaskValues; }
-    QStringList enumStrings() const { return _enumStrings; }
+
+    QStringList enumStrings() const;
     QVariantList enumValues() const { return _enumValues; }
     QString category() const { return _category; }
     QString group() const { return _group; }
-    QString longDescription() const { return _longDescription;}
+
+    QString longDescription() const { return translateDisplayText(_longDescription); }
     QVariant rawMax() const { return _rawMax; }
     QVariant cookedMax() const;
     bool maxIsDefaultForType() const { return (_rawMax == _maxForType()); }
@@ -142,8 +145,12 @@ public:
     QVariant cookedUserMin() const;
     QVariant cookedUserMax() const;
     QString name() const { return _name; }
-    QString label() const { return _label; }
-    QString shortDescription() const { return _shortDescription; }
+
+    QString label() const { return translateDisplayText(_label); }
+
+    QString shortDescription() const { return translateDisplayText(_shortDescription); }
+
+    static QString translateDisplayText(const QString& text, const char* context = "ParameterMetaData");
     ValueType_t type() const { return _type; }
     QString rawUnits() const { return _rawUnits; }
     QString cookedUnits() const { return _cookedUnits; }

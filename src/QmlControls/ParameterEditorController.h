@@ -66,9 +66,12 @@ public:
     ParameterEditorGroup(QObject* parent);
 
     Q_PROPERTY(QString              name    MEMBER name     CONSTANT)
+    Q_PROPERTY(QString displayName READ displayName CONSTANT)
     Q_PROPERTY(QAbstractTableModel* facts   READ getFacts   CONSTANT)
 
-    QAbstractTableModel*  getFacts(void) { return &facts; }
+    QAbstractTableModel* getFacts(void) { return &facts; }
+
+    QString displayName() const { return FactMetaData::translateDisplayText(name, "ParameterGroups"); }
 
     int                 componentId;
     QString             name;
@@ -83,9 +86,12 @@ public:
     ParameterEditorCategory(QObject* parent) : QObject(parent) { }
 
     Q_PROPERTY(QString              name    MEMBER name     CONSTANT)
+    Q_PROPERTY(QString displayName READ displayName CONSTANT)
     Q_PROPERTY(QmlObjectListModel*  groups  READ getGroups  CONSTANT)
 
-    QmlObjectListModel*  getGroups(void) { return &groups; }
+    QmlObjectListModel* getGroups(void) { return &groups; }
+
+    QString displayName() const { return FactMetaData::translateDisplayText(name, "ParameterGroups"); }
 
     QString             name;
     QmlObjectListModel  groups;

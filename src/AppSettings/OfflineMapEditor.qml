@@ -179,7 +179,7 @@ FlightMap {
                     anchors.left: parent.left
                     anchors.right: parent.right
                     wrapMode: Text.WordWrap
-                    text: tileSet ? tileSet.name : ""
+                    text: tileSet ? qsTr("Default Tile Set") : ""
                     font.pointSize: _saveRealEstate ? ScreenTools.defaultFontPointSize : ScreenTools.mediumFontPointSize
                     horizontalAlignment: Text.AlignHCenter
                     visible: _defaultSet
@@ -200,7 +200,7 @@ FlightMap {
                             if (tileSet.defaultSet)
                                 return qsTr("System Wide Tile Cache")
                             else
-                                return "(" + tileSet.mapTypeStr + ")"
+                                return "(" + qsTranslate("MapType", tileSet.mapTypeStr) + ")"
                         } else
                             return ""
                     }

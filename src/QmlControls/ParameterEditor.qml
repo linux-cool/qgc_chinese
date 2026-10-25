@@ -231,7 +231,7 @@ Item {
                         id:             categoryHeader
                         anchors.left:   parent.left
                         anchors.right:  parent.right
-                        text:           object.name
+                        text:           object.displayName
                         checked:        object == controller.currentCategory
 
                         onCheckedChanged: {
@@ -246,7 +246,7 @@ Item {
 
                         QGCButton {
                             width:          ScreenTools.defaultFontPixelWidth * 25
-                            text:           object.name
+                            text:           object.displayName
                             height:         _rowHeight
                             checked:        object == controller.currentGroup
                             autoExclusive:  true

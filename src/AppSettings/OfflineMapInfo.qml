@@ -18,12 +18,12 @@ RowLayout {
 
     QGCLabel {
         Layout.fillWidth:   true
-        text:               tileSet.name
+        text:               tileSet.defaultSet ? qsTr("Default Tile Set") : tileSet.name
     }
 
     QGCLabel {
         id:     sizeLabel
-        text:   tileSet.downloadStatus + (_tileCount > 0 ? " (" + _tileCount + " tiles)" : "")
+        text:   tileSet.downloadStatus + (_tileCount > 0 ? qsTr(" (%1 tiles)").arg(_tileCount) : "")
     }
 
     Rectangle {

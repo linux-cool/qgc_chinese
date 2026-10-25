@@ -75,11 +75,37 @@ Q_APPLICATION_STATIC(QTranslator, s_jsonTranslator);
 
 QJsonObject translateObject(QJsonObject &jsonObject, const QString &translateContext, const QStringList &translateKeys);
 
-QJsonArray translateArray(QJsonArray &jsonArray, const QString &translateContext, const QStringList &translateKeys)
+QString translateString(const QString& text, const QString& translateContext)
+{
+    QString source = text;
+    QString disambiguation;
+    const QString prefix = QStringLiteral("#loc.disambiguation#");
+    if (source.startsWith(prefix)) {
+        source.remove(0, prefix.size());
+        const qsizetype commentEndIndex = source.indexOf(u'#');
+        if (commentEndIndex != -1) {
+            disambiguation = source.left(commentEndIndex);
+            source.remove(0, commentEndIndex + 1);
+        }
+    }
+    const QString translated = JsonParsing::translator()->translate(
+        translateContext.toUtf8().constData(), source.toUtf8().constData(), disambiguation.toUtf8().constData());
+    return translated.isNull() ? source : translated;
+}
+
+QJsonArray translateArray(QJsonArray& jsonArray, const QString& translateContext, const QStringList& translateKeys,
+                          bool translateStrings)
 {
     for (qsizetype i = 0; i < jsonArray.count(); i++) {
-        QJsonObject childJsonObject = jsonArray[i].toObject();
-        jsonArray[i] = translateObject(childJsonObject, translateContext, translateKeys);
+        if (jsonArray[i].isObject()) {
+            QJsonObject childJsonObject = jsonArray[i].toObject();
+            jsonArray[i] = translateObject(childJsonObject, translateContext, translateKeys);
+        } else if (jsonArray[i].isArray()) {
+            QJsonArray childJsonArray = jsonArray[i].toArray();
+            jsonArray[i] = translateArray(childJsonArray, translateContext, translateKeys, translateStrings);
+        } else if (translateStrings && jsonArray[i].isString()) {
+            jsonArray[i] = translateString(jsonArray[i].toString(), translateContext);
+        }
     }
     return jsonArray;
 }
@@ -88,32 +114,13 @@ QJsonObject translateObject(QJsonObject &jsonObject, const QString &translateCon
 {
     for (const QString &key : jsonObject.keys()) {
         if (jsonObject[key].isString()) {
-            QString locString = jsonObject[key].toString();
-            if (!translateKeys.contains(key)) {
-                continue;
-            }
-
-            QString disambiguation;
-            const QString disambiguationPrefix("#loc.disambiguation#");
-            if (locString.startsWith(disambiguationPrefix)) {
-                locString = locString.right(locString.length() - disambiguationPrefix.length());
-                const int commentEndIndex = locString.indexOf("#");
-                if (commentEndIndex != -1) {
-                    disambiguation = locString.left(commentEndIndex);
-                    locString = locString.right(locString.length() - disambiguation.length() - 1);
-                }
-            }
-
-            const QString xlatString = JsonParsing::translator()->translate(
-                translateContext.toUtf8().constData(),
-                locString.toUtf8().constData(),
-                disambiguation.toUtf8().constData());
-            if (!xlatString.isNull()) {
-                jsonObject[key] = xlatString;
+            if (translateKeys.contains(key)) {
+                jsonObject[key] = translateString(jsonObject[key].toString(), translateContext);
             }
         } else if (jsonObject[key].isArray()) {
             QJsonArray childJsonArray = jsonObject[key].toArray();
-            jsonObject[key] = translateArray(childJsonArray, translateContext, translateKeys);
+            jsonObject[key] =
+                translateArray(childJsonArray, translateContext, translateKeys, translateKeys.contains(key));
         } else if (jsonObject[key].isObject()) {
             QJsonObject childJsonObject = jsonObject[key].toObject();
             jsonObject[key] = translateObject(childJsonObject, translateContext, translateKeys);

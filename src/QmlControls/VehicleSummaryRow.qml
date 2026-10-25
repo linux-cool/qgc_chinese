@@ -10,8 +10,8 @@ ColumnLayout {
     Layout.fillWidth: true
     spacing: 0
 
-    property string labelText: "Label"
-    property string valueText: "value"
+    property string labelText: qsTr("Label")
+    property string valueText: qsTr("value")
     property string valueColor: ""
     property bool showDivider: true
 

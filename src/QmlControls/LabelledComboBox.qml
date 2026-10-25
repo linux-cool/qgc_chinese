@@ -13,6 +13,7 @@ RowLayout {
     property alias currentText:             _comboBox.currentText
     property alias currentValue:            _comboBox.currentValue
     property alias alternateText:           _comboBox.alternateText
+    property alias translationContext:      _comboBox.translationContext
     property var   comboBox:                _comboBox
     property real  comboBoxPreferredWidth:  -1
 

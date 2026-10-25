@@ -1,3 +1,29 @@
+# qgc_chinese
+
+基于 QGroundControl 的简体中文版本，默认使用中文，覆盖设置、深层参数说明、枚举、机架、地图类型和已知飞行模式。
+内置 Noto Sans CJK SC 字体；参数代码、协议标识、型号、单位符号和原始路径保留原文。
+
+## Windows 安装包
+
+打开仓库的 [Windows Chinese Installer](https://github.com/linux-cool/qgc_chinese/actions/workflows/windows-chinese.yml)
+构建页面，选择 **Run workflow**。构建成功后，在该次运行的 **Artifacts** 中下载
+`qgc-chinese-windows-x64`，解压后运行 `QGroundControl-installer-AMD64.exe`。
+
+流程使用 Windows x64、MSVC 2022 和仓库指定的 Qt 版本，包含中文资源检查、应用启动检查、安装及升级测试。
+首次推送到 `main` 也会自动构建。安装包包含所需运行依赖和中文字体。
+
+## 构建与验证
+
+- 构建版本及 Qt 模块见 [.github/build-config.json](.github/build-config.json)。
+- 本地构建说明见 [tools/README.md](tools/README.md)。
+- 中文覆盖检查见 [tools/translations/README.md](tools/translations/README.md#simplified-chinese-audit)。
+- 字体许可证见 [NotoSansCJK-LICENSE.txt](resources/fonts/NotoSansCJK-LICENSE.txt)。
+- 项目开源许可证见 [.github/COPYING.md](.github/COPYING.md)。
+
+## 上游项目
+
+以下为 QGroundControl 上游说明；其中的上游下载链接指向官方发行版。
+
 <p align="center">
   <img src="https://raw.githubusercontent.com/Dronecode/UX-Design/35d8148a8a0559cd4bcf50bfa2c94614983cce91/QGC/Branding/Deliverables/QGC_RGB_Logo_Horizontal_Positive_PREFERRED/QGC_RGB_Logo_Horizontal_Positive_PREFERRED.svg" alt="QGroundControl Logo" width="500">
 </p>

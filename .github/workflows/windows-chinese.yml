@@ -1,0 +1,167 @@
+name: Windows Chinese Installer
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/actions/**'
+      - '.github/build-config.json'
+      - '.github/scripts/**'
+      - '.github/workflows/windows-chinese.yml'
+      - 'CMakeLists.txt'
+      - 'cmake/**'
+      - 'deploy/**'
+      - 'resources/**'
+      - 'src/**'
+      - 'tools/**'
+      - 'translations/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: windows-chinese-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows-x64:
+    name: Windows x64 Release
+    runs-on: windows-2022
+    timeout-minutes: 120
+
+    steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+
+      - name: Checkout source and version tags
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Windows build environment
+        uses: ./.github/actions/build-setup
+        with:
+          qt-host: windows
+          qt-arch: win64_msvc2022_64
+          build-type: Release
+
+      - name: Install NSIS
+        uses: ./.github/actions/install-dependencies
+        with:
+          gstreamer: 'false'
+          nsis: 'true'
+
+      - name: Check Chinese catalogs
+        shell: bash
+        run: |
+          python -m translations.check_chinese
+          python -m translations.check_placeholders --base-ref EMPTY \
+            translations/qgc_source_zh_CN.ts \
+            translations/qgc_json_zh_CN.ts \
+            translations/qgc_parameters_zh_CN.ts
+        env:
+          PYTHONPATH: tools
+
+      - name: Configure Windows application and installer
+        uses: ./.github/actions/cmake-configure
+        with:
+          build-dir: ${{ runner.temp }}/build
+          build-type: Release
+          preset: Windows
+          extra-args: >-
+            -DQGC_BUILD_PORTABLE_TESTS=ON
+            -DQGC_ENABLE_GST_VIDEOSTREAMING=ON
+            -DQGC_CPACK_GENERATOR=NSIS
+
+      - name: Build Windows application
+        uses: ./.github/actions/cmake-build
+        with:
+          build-dir: ${{ runner.temp }}/build
+          build-type: Release
+          parallel-jobs: '2'
+
+      - name: Run portable tests
+        uses: ./.github/actions/run-unit-tests
+        with:
+          build-dir: ${{ runner.temp }}/build
+          build-type: Release
+          include-labels: Portable
+          parallel: '2'
+
+      - name: Verify application startup
+        uses: ./.github/actions/verify-executable
+        with:
+          binary-path: ${{ runner.temp }}/build/Release/QGroundControl.exe
+          type: exe
+          build-dir: ${{ runner.temp }}/build
+
+      - name: Create installer
+        uses: ./.github/actions/cmake-build
+        with:
+          build-dir: ${{ runner.temp }}/build
+          build-type: Release
+          target: qgc-package
+          parallel: 'false'
+
+      - name: Verify installer checksum
+        shell: bash
+        env:
+          PYTHONPATH: tools
+          INSTALLER_PATH: ${{ runner.temp }}/build/QGroundControl-installer-AMD64.exe
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          from common.io import verify_sha256_sidecar
+
+          print(verify_sha256_sidecar(Path(os.environ["INSTALLER_PATH"])))
+          PY
+
+      - name: Install and test upgrade
+        shell: pwsh
+        env:
+          INSTALLER_PATH: ${{ runner.temp }}\build\QGroundControl-installer-AMD64.exe
+          OLD_INSTALL_DIR: ${{ runner.temp }}\qgc-install-old
+          INSTALL_DIR: ${{ runner.temp }}\qgc-install-test
+          EXPECT_GSTREAMER: 'true'
+        run: ./deploy/windows/verify-installer.ps1 -Phase Install
+
+      - name: Verify installed application startup
+        uses: ./.github/actions/verify-executable
+        with:
+          binary-path: ${{ env.QGC_INSTALL_TEST_BINARY }}
+          type: exe
+
+      - name: Uninstall test application
+        if: always() && env.QGC_INSTALL_TEST_BINARY != ''
+        shell: pwsh
+        run: ./deploy/windows/verify-installer.ps1 -Phase Uninstall
+
+      - name: Upload installer and checksum
+        uses: actions/upload-artifact@v7
+        with:
+          name: qgc-chinese-windows-x64
+          path: |
+            ${{ runner.temp }}/build/QGroundControl-installer-AMD64.exe
+            ${{ runner.temp }}/build/QGroundControl-installer-AMD64.exe.sha256
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14
+
+      - name: Upload build diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: windows-chinese-build-diagnostics
+          path: |
+            ${{ runner.temp }}/build/CMakeFiles/CMakeConfigureLog.yaml
+            ${{ runner.temp }}/build/Testing/Temporary/LastTest.log
+            ${{ runner.temp }}/build/junit-results.xml
+            ${{ runner.temp }}/build/test-output.txt
+          if-no-files-found: ignore
+          retention-days: 7

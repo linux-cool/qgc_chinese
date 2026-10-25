@@ -411,7 +411,7 @@ bool Actuators::parseJson(const QJsonDocument &json)
     QJsonArray outputs = outputsJson.toArray();
     for (const auto &&outputJson : outputs) {
         QJsonValue output = outputJson.toObject();
-        QString label = output["label"].toString();
+        QString label = FactMetaData::translateDisplayText(output["label"].toString());
 
         qCDebug(ActuatorsLog) << "Actuator group:" << label;
 
@@ -445,7 +445,7 @@ bool Actuators::parseJson(const QJsonDocument &json)
         QJsonArray subgroups = output["subgroups"].toArray();
         for (const auto&& subgroupJson : subgroups) {
             QJsonValue subgroup = subgroupJson.toObject();
-            QString subgroupLabel = subgroup["label"].toString();
+            QString subgroupLabel = FactMetaData::translateDisplayText(subgroup["label"].toString());
             ActuatorOutputSubgroup* actuatorSubgroup = new ActuatorOutputSubgroup(this, subgroupLabel);
             currentActuatorOutput->addSubgroup(actuatorSubgroup);
 
@@ -519,7 +519,7 @@ bool Actuators::parseJson(const QJsonDocument &json)
             QJsonArray channels = subgroup["channels"].toArray();
             for (const auto&& channelJson : channels) {
                 QJsonValue channel = channelJson.toObject();
-                QString channelLabel = channel["label"].toString();
+                QString channelLabel = FactMetaData::translateDisplayText(channel["label"].toString());
                 int paramIndex = channel["param-index"].toInt();
                 qCDebug(ActuatorsLog) << "channel label:" << channelLabel << "param-index" << paramIndex;
                 actuatorSubgroup->addChannel(
@@ -539,10 +539,10 @@ bool Actuators::parseJson(const QJsonDocument &json)
         int key = functionKey.toInt(&ok);
         if (ok) {
             QJsonObject functionObj = functions.value(functionKey).toObject();
-            QString label = functionObj["label"].toString();
+            QString label = FactMetaData::translateDisplayText(functionObj["label"].toString());
             if (label != "") {
                 QJsonObject noteObj = functionObj["note"].toObject();
-                QString note = noteObj["text"].toString();
+                QString note = FactMetaData::translateDisplayText(noteObj["text"].toString());
                 QString condition = noteObj["condition"].toString();
                 QString noteCondition = functionObj["label"].toString();
                 bool exclude = functionObj["exclude-from-actuator-testing"].toBool(false);
@@ -604,13 +604,13 @@ bool Actuators::parseJson(const QJsonDocument &json)
         Mixer::MixerOption option{};
         option.option = mixerConfig["option"].toString();
         option.type = mixerConfig["type"].toString();
-        option.title = mixerConfig["title"].toString();
+        option.title = FactMetaData::translateDisplayText(mixerConfig["title"].toString());
         option.helpUrl = mixerConfig["help-url"].toString();
         QJsonArray actuatorsJson = mixerConfig["actuators"].toArray();
         for (const auto&& actuatorJson : actuatorsJson) {
             QJsonValue actuatorJsonVal = actuatorJson.toObject();
             Mixer::MixerOption::ActuatorGroup actuator{};
-            actuator.groupLabel = actuatorJsonVal["group-label"].toString();
+            actuator.groupLabel = FactMetaData::translateDisplayText(actuatorJsonVal["group-label"].toString());
             if (actuatorJsonVal["count"].isString()) {
                 actuator.count = actuatorJsonVal["count"].toString();
             } else {
@@ -671,7 +671,8 @@ bool Actuators::parseJson(const QJsonDocument &json)
             }
 
             if (actuatorJsonVal["item-label-prefix"].isString()) {
-                actuator.itemLabelPrefix.append(actuatorJsonVal["item-label-prefix"].toString());
+                actuator.itemLabelPrefix.append(
+                    FactMetaData::translateDisplayText(actuatorJsonVal["item-label-prefix"].toString()));
             } else {
                 QJsonArray itemLabelPrefixJson = actuatorJsonVal["item-label-prefix"].toArray();
                 for (const auto&& itemLabelPrefix : itemLabelPrefixJson) {

@@ -34,29 +34,27 @@ QList<QLocale::Language> AppSettings::_rgPartialLanguages = {
     QLocale::Ukrainian,
 };
 
-AppSettings::LanguageInfo_t AppSettings::_rgLanguageInfo[] = {
-    { QLocale::AnyLanguage,     "System" },                     // Must be first
-    { QLocale::Azerbaijani,     "Azerbaijani (Azerbaijani)" },
-    { QLocale::Bulgarian,       "български (Bulgarian)" },
-    { QLocale::Chinese,         "中文 (Chinese)" },
-    { QLocale::Dutch,           "Nederlands (Dutch)" },
-    { QLocale::English,         "English" },
-    { QLocale::Finnish,         "Suomi (Finnish)" },
-    { QLocale::French,          "Français (French)" },
-    { QLocale::German,          "Deutsche (German)" },
-    { QLocale::Greek,           "Ελληνικά (Greek)" },
-    { QLocale::Hebrew,          "עברית (Hebrew)" },
-    { QLocale::Italian,         "Italiano (Italian)" },
-    { QLocale::Japanese,        "日本語 (Japanese)" },
-    { QLocale::Korean,          "한국어 (Korean)" },
-    { QLocale::NorwegianBokmal, "Norsk (Norwegian)" },
-    { QLocale::Polish,          "Polskie (Polish)" },
-    { QLocale::Portuguese,      "Português (Portuguese)" },
-    { QLocale::Russian,         "Pусский (Russian)" },
-    { QLocale::Spanish,         "Español (Spanish)" },
-    { QLocale::Swedish,         "Svenska (Swedish)" },
-    { QLocale::Turkish,         "Türk (Turkish)" }
-};
+AppSettings::LanguageInfo_t AppSettings::_rgLanguageInfo[] = {{QLocale::AnyLanguage, "System"},  // Must be first
+                                                              {QLocale::Azerbaijani, "Azerbaijani (Azerbaijani)"},
+                                                              {QLocale::Bulgarian, "български (Bulgarian)"},
+                                                              {QLocale::Chinese, "简体中文"},
+                                                              {QLocale::Dutch, "Nederlands (Dutch)"},
+                                                              {QLocale::English, "English"},
+                                                              {QLocale::Finnish, "Suomi (Finnish)"},
+                                                              {QLocale::French, "Français (French)"},
+                                                              {QLocale::German, "Deutsche (German)"},
+                                                              {QLocale::Greek, "Ελληνικά (Greek)"},
+                                                              {QLocale::Hebrew, "עברית (Hebrew)"},
+                                                              {QLocale::Italian, "Italiano (Italian)"},
+                                                              {QLocale::Japanese, "日本語 (Japanese)"},
+                                                              {QLocale::Korean, "한국어 (Korean)"},
+                                                              {QLocale::NorwegianBokmal, "Norsk (Norwegian)"},
+                                                              {QLocale::Polish, "Polskie (Polish)"},
+                                                              {QLocale::Portuguese, "Português (Portuguese)"},
+                                                              {QLocale::Russian, "Pусский (Russian)"},
+                                                              {QLocale::Spanish, "Español (Spanish)"},
+                                                              {QLocale::Swedish, "Svenska (Swedish)"},
+                                                              {QLocale::Turkish, "Türk (Turkish)"}};
 
 DECLARE_SETTINGGROUP(App, "")
 {
@@ -237,7 +235,7 @@ DECLARE_SETTINGSFACT_NO_FUNC(AppSettings, qLocaleLanguage)
         QVariantList    rgEnumValues;
 
         // System is always an available selection
-        rgEnumStrings.append(_rgLanguageInfo[0].languageName);
+        rgEnumStrings.append(AppSettings::tr("System"));
         rgEnumValues.append(_rgLanguageInfo[0].languageId);
 
         for (const auto& languageInfo: _rgLanguageInfo) {
@@ -269,7 +267,7 @@ DECLARE_SETTINGSFACT_NO_FUNC(AppSettings, qLocaleLanguage)
         metaData->setEnumInfo(rgEnumStrings, rgEnumValues);
 
         if (_qLocaleLanguageFact->enumIndex() == -1) {
-            _qLocaleLanguageFact->setRawValue(QLocale::AnyLanguage);
+            _qLocaleLanguageFact->setRawValue(QLocale::Chinese);
         }
     }
     return _qLocaleLanguageFact;
@@ -402,7 +400,8 @@ QLocale::Language AppSettings::_qLocaleLanguageEarlyAccess(void)
     QSettings settings;
 
     // Note that the AppSettings group has no group name
-    QLocale::Language localeLanguage = static_cast<QLocale::Language>(settings.value(qLocaleLanguageName).toInt());
+    QLocale::Language localeLanguage =
+        static_cast<QLocale::Language>(settings.value(qLocaleLanguageName, static_cast<int>(QLocale::Chinese)).toInt());
     for (auto& languageInfo: _rgLanguageInfo) {
         if (languageInfo.languageId == localeLanguage) {
             return localeLanguage;
@@ -415,7 +414,7 @@ QLocale::Language AppSettings::_qLocaleLanguageEarlyAccess(void)
     }
 #endif
 
-    localeLanguage = QLocale::AnyLanguage;
+    localeLanguage = QLocale::Chinese;
     settings.setValue(qLocaleLanguageName, localeLanguage);
 
     return localeLanguage;

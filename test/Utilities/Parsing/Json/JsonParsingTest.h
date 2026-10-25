@@ -19,4 +19,5 @@ private slots:
     void _testIsJsonFileCompressedResourceBytes();
     void _testIsJsonFileCompressedResourcePath();
     void _testIsJsonFileMissingPath();
+    void _testTranslationPreservesArrayValues();
 };

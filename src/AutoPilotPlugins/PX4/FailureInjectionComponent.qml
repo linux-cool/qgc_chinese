@@ -175,7 +175,7 @@ SetupPage {
                            param4: 0,
                            logArgs: { unitName: _unitName(injected[i]),
                                       typeName: _typeName(MAVLinkEnums.FAILURE_TYPE_OK),
-                                      instanceLabel: "all", track: false } })
+                                      instanceLabel: qsTr("all"), track: false } })
         }
     }
 

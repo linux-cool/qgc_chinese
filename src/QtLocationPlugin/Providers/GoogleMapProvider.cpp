@@ -16,9 +16,8 @@ QString GoogleMapProvider::_getURL(int x, int y, int zoom) const
     QString sec1;
     QString sec2;
     _getSecGoogleWords(x, y, sec1, sec2);
-    return _mapUrl
-        .arg(_getServerNum(x, y, 4))
-        .arg(_versionRequest, _version, _language)
+    return _mapUrl.arg(_getServerNum(x, y, 4))
+        .arg(_versionRequest, _version, _mapLanguage())
         .arg(x)
         .arg(sec1)
         .arg(y)

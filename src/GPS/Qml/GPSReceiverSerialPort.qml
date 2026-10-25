@@ -79,7 +79,7 @@ ColumnLayout {
             onActivated: index => {
                 root._customRequested = index === root._rates.length
                 if (index >= 0 && index < root._rates.length)
-                    root.baudFact.rawValue = root._rates[index]
+                    root.baudFact.rawValue = root._rates[Number(index)]
             }
         }
     }

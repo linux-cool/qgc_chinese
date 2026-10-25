@@ -144,7 +144,7 @@ void QGCMapEngineManager::startDownload(const QString &name, const QString &mapT
 
     const int mapid = UrlFactory::getQtMapIdFromProviderType(mapType);
     if (_fetchElevation && !UrlFactory::isElevation(mapid)) {
-        QGCCachedTileSet* const set = new QGCCachedTileSet(name + QStringLiteral(" Elevation"));
+        QGCCachedTileSet* const set = new QGCCachedTileSet(name + tr(" Elevation"));
         const QString elevationProviderName = SettingsManager::instance()->flightMapSettings()->elevationMapProvider()->rawValue().toString();
         set->setMapTypeStr(elevationProviderName);
         set->setTopleftLat(_topleftLat);
@@ -270,34 +270,32 @@ void QGCMapEngineManager::taskError(QGCMapTask::TaskType type, const QString &er
     QString task;
     switch (type) {
     case QGCMapTask::TaskType::taskFetchTileSets:
-        task = QStringLiteral("Fetch Tile Set");
+        task = tr("Fetch Tile Set");
         break;
     case QGCMapTask::TaskType::taskCreateTileSet:
-        task = QStringLiteral("Create Tile Set");
+        task = tr("Create Tile Set");
         break;
     case QGCMapTask::TaskType::taskGetTileDownloadList:
-        task = QStringLiteral("Get Tile Download List");
+        task = tr("Get Tile Download List");
         break;
     case QGCMapTask::TaskType::taskUpdateTileDownloadState:
-        task = QStringLiteral("Update Tile Download Status");
+        task = tr("Update Tile Download Status");
         break;
     case QGCMapTask::TaskType::taskDeleteTileSet:
-        task = QStringLiteral("Delete Tile Set");
+        task = tr("Delete Tile Set");
         break;
     case QGCMapTask::TaskType::taskReset:
-        task = QStringLiteral("Reset Tile Sets");
+        task = tr("Reset Tile Sets");
         break;
     case QGCMapTask::TaskType::taskExport:
-        task = QStringLiteral("Export Tile Sets");
+        task = tr("Export Tile Sets");
         break;
     default:
-        task = QStringLiteral("Database Error");
+        task = tr("Database Error");
         break;
     }
 
-    QString serror = QStringLiteral("Error in task: ") + task;
-    serror += QStringLiteral("\nError description:\n");
-    serror += error;
+    const QString serror = tr("Error in task: %1\nError description:\n%2").arg(task, error);
 
     setErrorMessage(serror);
 
@@ -449,7 +447,7 @@ QString QGCMapEngineManager::getUniqueName() const
 {
     int count = 1;
     while (true) {
-        const QString name = QStringLiteral("Tile Set ") + QString::asprintf("%03d", count++);
+        const QString name = tr("Tile Set ") + QString::asprintf("%03d", count++);
         if (!findName(name)) {
             return name;
         }

@@ -1,17 +1,47 @@
 #include "FactMetaData.h"
+
+#include <limits>
+
+#include <QtCore/QCoreApplication>
+#include <QtCore/QJsonArray>
+#include <QtCore/QJsonObject>
+#include <QtCore/QtMath>
+
 #include "JsonParsing.h"
 #include "MAVLinkLib.h"
 #include "QGCLoggingCategory.h"
 #include "SettingsManager.h"
 #include "UnitsSettings.h"
 
-#include <QtCore/QJsonArray>
-#include <QtCore/QJsonObject>
-#include <QtCore/QtMath>
-
-#include <limits>
-
 QGC_LOGGING_CATEGORY(FactMetaDataLog, "FactSystem.FactMetaData")
+
+QString FactMetaData::translateDisplayText(const QString& text, const char* context)
+{
+    if (text.isEmpty()) {
+        return text;
+    }
+    return QCoreApplication::translate(context, text.toUtf8().constData());
+}
+
+QStringList FactMetaData::enumStrings() const
+{
+    QStringList strings;
+    strings.reserve(_enumStrings.size());
+    for (const QString& text : _enumStrings) {
+        strings.append(translateDisplayText(text));
+    }
+    return strings;
+}
+
+QStringList FactMetaData::bitmaskStrings() const
+{
+    QStringList strings;
+    strings.reserve(_bitmaskStrings.size());
+    for (const QString& text : _bitmaskStrings) {
+        strings.append(translateDisplayText(text));
+    }
+    return strings;
+}
 
 // Bitmask values are built with `1u << index`, so valid indices are bounded by the
 // width of unsigned int. Keep this in sync with the shift in createFromJsonObject.

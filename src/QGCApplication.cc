@@ -159,6 +159,10 @@ QGCApplication::QGCApplication(int& argc, char* argv[], const QGCCommandLinePars
     }
 
     // We need to set language as early as possible prior to loading on JSON files.
+    if (_runningUnitTests) {
+        // Existing fixtures compare diagnostics and metadata in English.
+        settings.setValue(AppSettings::qLocaleLanguageName, static_cast<int>(QLocale::English));
+    }
     setLanguage();
 
     // Force old SVG Tiny 1.2 behavior for compatibility
@@ -190,9 +194,10 @@ void QGCApplication::setLanguage()
     qCDebug(QGCApplicationLog) << "Loading localizations for" << _locale.name();
     removeTranslator(JsonParsing::translator());
     removeTranslator(&_qgcTranslatorSourceCode);
+    removeTranslator(&_qgcTranslatorParameters);
     removeTranslator(&_qgcTranslatorQtLibs);
+    QLocale::setDefault(_locale);
     if (_locale.name() != "en_US") {
-        QLocale::setDefault(_locale);
         if (_qgcTranslatorQtLibs.load("qt_" + _locale.name(), QLibraryInfo::path(QLibraryInfo::TranslationsPath))) {
             installTranslator(&_qgcTranslatorQtLibs);
         } else {
@@ -207,6 +212,9 @@ void QGCApplication::setLanguage()
             installTranslator(JsonParsing::translator());
         } else {
             qCWarning(QGCApplicationLog) << "Error loading json localization for" << _locale.name();
+        }
+        if (_qgcTranslatorParameters.load(_locale, QLatin1String("qgc_parameters_"), "", ":/i18n")) {
+            installTranslator(&_qgcTranslatorParameters);
         }
     }
 
@@ -228,6 +236,17 @@ void QGCApplication::init()
     }
 
     LogManager::instance()->init();
+
+    if (QFontDatabase::addApplicationFont(":/fonts/NotoSansCJKsc-Regular.otf") < 0) {
+        qCWarning(QGCApplicationLog) << "Could not load bundled Chinese font";
+    } else {
+        QFontDatabase::addApplicationFallbackFontFamily(QChar::Script_Han, QStringLiteral("Noto Sans CJK SC"));
+        if (_locale.language() == QLocale::Chinese) {
+            QFont chineseFont = font();
+            chineseFont.setFamily(QStringLiteral("Noto Sans CJK SC"));
+            setFont(chineseFont);
+        }
+    }
 
     // Although this should really be in _initForNormalAppBoot putting it here allowws us to create unit tests which pop
     // up more easily

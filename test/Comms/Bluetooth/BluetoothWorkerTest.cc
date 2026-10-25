@@ -1,14 +1,15 @@
 #include "BluetoothWorkerTest.h"
 
+#include <QtBluetooth/QBluetoothServiceDiscoveryAgent>
+#include <QtCore/QRegularExpression>
+#include <QtCore/QSettings>
+#include <QtCore/QTimer>
+#include <QtTest/QSignalSpy>
+
 #include "BluetoothBleWorker.h"
 #include "BluetoothClassicWorker.h"
 #include "BluetoothConfiguration.h"
 #include "BluetoothWorker.h"
-
-#include <QtBluetooth/QBluetoothServiceDiscoveryAgent>
-#include <QtCore/QRegularExpression>
-#include <QtCore/QTimer>
-#include <QtTest/QSignalSpy>
 
 static QTimer *_findServiceDiscoveryTimer(const BluetoothWorker *worker)
 {
@@ -128,6 +129,15 @@ void BluetoothWorkerTest::_testConnectWhileConnectedWarns()
 void BluetoothWorkerTest::_testDisconnectResetsReconnectState()
 {
     BluetoothConfiguration config("TestBT_disconnectReset");
+    QSettings settings;
+    settings.setValue(QStringLiteral("BluetoothFixture/deviceName"), QStringLiteral("Test device"));
+    settings.setValue(QStringLiteral("BluetoothFixture/address"), QStringLiteral("00:11:22:33:44:55"));
+    config.loadSettings(settings, QStringLiteral("BluetoothFixture"));
+
+    // The fixture has no physical peer; BlueZ may reject it before discovery.
+    ignoreLogMessage("qt.bluetooth.bluez", QtWarningMsg,
+                     QRegularExpression(
+                         QStringLiteral("^Unknown remote device: \"00:11:22:33:44:55\" Try device discovery first$")));
 
     std::unique_ptr<BluetoothWorker> worker(BluetoothWorker::create(&config));
 

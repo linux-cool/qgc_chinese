@@ -1,5 +1,8 @@
 #include "FirmwarePlugin.h"
 
+#include <algorithm>
+
+#include <QtCore/QCoreApplication>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QtCore/QRegularExpression>
@@ -510,7 +513,17 @@ void FirmwarePlugin::_updateFlightModeList(FlightModeList &flightModeList)
     _flightModeList.clear();
     _modeEnumToString.clear();
 
-    for (FirmwareFlightMode &flightMode : flightModeList) {
+    for (const FirmwareFlightMode& receivedMode : flightModeList) {
+        FirmwareFlightMode flightMode = receivedMode;
+        flightMode.mode_name = QCoreApplication::translate("FlightModes", receivedMode.mode_name.toUtf8().constData());
+        const bool duplicateLabel = std::any_of(
+            _flightModeList.cbegin(), _flightModeList.cend(), [&flightMode](const FirmwareFlightMode& existing) {
+                return existing.custom_mode != flightMode.custom_mode &&
+                       existing.mode_name.compare(flightMode.mode_name, Qt::CaseInsensitive) == 0;
+            });
+        if (duplicateLabel) {
+            flightMode.mode_name += QStringLiteral(" (%1)").arg(flightMode.custom_mode);
+        }
         _modeEnumToString[flightMode.custom_mode] = flightMode.mode_name;
         _addNewFlightMode(flightMode);
     }

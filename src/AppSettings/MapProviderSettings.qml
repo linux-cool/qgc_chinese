@@ -16,6 +16,7 @@ SettingsGroupLayout {
 
     LabelledComboBox {
         label: qsTr("Provider")
+        translationContext: "MapType"
         model: _mapEngineManager.mapProviderList
 
         onActivated: (index) => {
@@ -32,6 +33,7 @@ SettingsGroupLayout {
 
     LabelledComboBox {
         label: qsTr("Type")
+        translationContext: "MapType"
         model: _mapEngineManager.mapTypeList(_mapProviderFact.rawValue)
 
         onActivated: (index) => { _mapTypeFact.rawValue = comboBox.textAt(index) }
@@ -45,6 +47,7 @@ SettingsGroupLayout {
 
     LabelledComboBox {
         label: qsTr("Elevation Provider")
+        translationContext: "MapType"
         model: _mapEngineManager.elevationProviderList
 
         onActivated: (index) => { _elevationProviderFact.rawValue = comboBox.textAt(index) }

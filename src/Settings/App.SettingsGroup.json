@@ -344,7 +344,7 @@
             "name": "qLocaleLanguage",
             "shortDesc": "Determines the language used for the application interface. Requires restart.",
             "type": "uint32",
-            "default": 0,
+            "default": 58,
             "qgcRebootRequired": true,
             "comment": "QLocale::Language id. Fact enum metadata is setup in AppSettings code. QGC reboot required in order to load new json translations into FactMetaData.",
             "label": "Language",

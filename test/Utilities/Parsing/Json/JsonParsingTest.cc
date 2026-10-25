@@ -3,10 +3,45 @@
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
+#include <QtCore/QTemporaryDir>
 #include <QtCore/qnumeric.h>
 
 #include "JsonParsing.h"
 #include "QGCFileHelper.h"
+
+void JsonParsingTest::_testTranslationPreservesArrayValues()
+{
+    QTemporaryDir directory;
+    QVERIFY(directory.isValid());
+    const QJsonArray keywords = {"Battery",
+                                 42,
+                                 true,
+                                 QJsonValue(),
+                                 QJsonArray{"nested", 17},
+                                 QJsonObject{{"label", "#loc.disambiguation#hint#Inner"}}};
+    const QJsonArray identifiers = {"MPC_XY_CRUISE", "#loc.disambiguation#raw#keep", 0, false};
+    const QJsonObject source = {{"fileType", "Test"},
+                                {"version", 1},
+                                {"translateKeys", "label,keywords"},
+                                {"keywords", keywords},
+                                {"identifiers", identifiers}};
+    const QString fileName = directory.filePath(QStringLiteral("localization.json"));
+    QFile file(fileName);
+    QVERIFY(file.open(QIODevice::WriteOnly));
+    const QByteArray bytes = QJsonDocument(source).toJson();
+    QCOMPARE(file.write(bytes), bytes.size());
+    file.close();
+
+    int version = 0;
+    QString error;
+    const QJsonObject result =
+        JsonParsing::openInternalQGCJsonFile(fileName, QStringLiteral("Test"), 1, 1, version, error);
+    QVERIFY2(error.isEmpty(), qPrintable(error));
+    QCOMPARE(result.value(QStringLiteral("identifiers")).toArray(), identifiers);
+    QJsonArray expected = keywords;
+    expected[5] = QJsonObject{{"label", "Inner"}};
+    QCOMPARE(result.value(QStringLiteral("keywords")).toArray(), expected);
+}
 
 void JsonParsingTest::_testValidateRequiredKeysSuccess()
 {

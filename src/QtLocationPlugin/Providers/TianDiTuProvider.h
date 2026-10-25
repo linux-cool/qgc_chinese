@@ -26,22 +26,16 @@ class TianDiTuRoadProvider : public TianDiTuProvider
 {
 public:
     TianDiTuRoadProvider()
-        : TianDiTuProvider(
-            QObject::tr("TianDiTu Road"),
-            QStringLiteral("cia_w"),
-            QStringLiteral("png"),
-            AVERAGE_TIANDITU_STREET_MAP,
-            MapProvider::StreetMap) {}
+        : TianDiTuProvider(QStringLiteral("TianDiTu Road"), QStringLiteral("cia_w"), QStringLiteral("png"),
+                           AVERAGE_TIANDITU_STREET_MAP, MapProvider::StreetMap)
+    {}
 };
 
 class TianDiTuSatelliteProvider : public TianDiTuProvider
 {
 public:
     TianDiTuSatelliteProvider()
-        : TianDiTuProvider(
-            QObject::tr("TianDiTu Satellite"),
-            QStringLiteral("img_w"),
-            QStringLiteral("jpg"),
-            AVERAGE_TIANDITU_SAT_MAP,
-            MapProvider::SatelliteMapDay) {}
+        : TianDiTuProvider(QStringLiteral("TianDiTu Satellite"), QStringLiteral("img_w"), QStringLiteral("jpg"),
+                           AVERAGE_TIANDITU_SAT_MAP, MapProvider::SatelliteMapDay)
+    {}
 };

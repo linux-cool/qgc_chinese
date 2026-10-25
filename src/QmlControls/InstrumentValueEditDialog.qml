@@ -45,6 +45,7 @@ QGCPopupDialog {
                         id:                     factGroupCombo
                         label:                  qsTr("Group")
                         model:                  instrumentValueData.factGroupNames
+                        translationContext:     "TelemetryGroup"
                         currentIndex:           instrumentValueData.factGroupNames.indexOf(instrumentValueData.factGroupName)
                         onActivated: (index) => {
                             instrumentValueData.setFact(currentText, "")
@@ -61,6 +62,7 @@ QGCPopupDialog {
                         id:                     factNamesCombo
                         label:                  qsTr("Value")
                         model:                  instrumentValueData.factValueNames
+                        translationContext:     "Telemetry." + (instrumentValueData.factGroupName.startsWith("Battery") ? "Battery" : instrumentValueData.factGroupName)
                         currentIndex:           instrumentValueData.factValueNames.indexOf(instrumentValueData.factName)
                         onActivated: (index) => {
                             instrumentValueData.setFact(instrumentValueData.factGroupName, currentText)
@@ -385,17 +387,17 @@ QGCPopupDialog {
             }
 
             Column {
-                id:         mainColumn
+                id:         iconMainColumn
                 spacing:    ScreenTools.defaultFontPixelHeight / 2
 
                 QGCLabel {
-                    width:      rowLayout.width
+                    width:      iconRowLayout.width
                     text:       qsTr("Specify the icon you want to display based on value ranges.")
                     wrapMode:   Text.WordWrap
                 }
 
                 Row {
-                    id:         rowLayout
+                    id:         iconRowLayout
                     spacing:    _margins
 
                     Column {
@@ -490,17 +492,17 @@ QGCPopupDialog {
             }
 
             Column {
-                id:         mainColumn
+                id:         opacityMainColumn
                 spacing:    ScreenTools.defaultFontPixelHeight / 2
 
                 QGCLabel {
-                    width:      rowLayout.width
+                    width:      opacityRowLayout.width
                     text:       qsTr("Specify the icon opacity you want based on value ranges.")
                     wrapMode:   Text.WordWrap
                 }
 
                 Row {
-                    id:         rowLayout
+                    id:         opacityRowLayout
                     spacing:    _margins
 
                     Column {

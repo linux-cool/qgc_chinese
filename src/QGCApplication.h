@@ -148,6 +148,7 @@ private:
     bool _settingsUpgraded = false;    ///< true: Settings format has been upgrade to new version
     QQuickWindow *_mainRootWindow = nullptr;
     QTranslator _qgcTranslatorSourceCode;           ///< translations for source code C++/Qml
+    QTranslator _qgcTranslatorParameters;           ///< display text from firmware parameter metadata
     QTranslator _qgcTranslatorQtLibs;               ///< tranlsations for Qt libraries
     QLocale _locale;
     bool _error = false;

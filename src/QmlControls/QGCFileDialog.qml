@@ -123,6 +123,7 @@ Item {
 
     FileDialog {
         id:             fullFileDialog
+        options:        Qt.locale().name.startsWith("zh") ? FileDialog.DontUseNativeDialog : 0
         currentFolder:  QGCFileDialogController.localFileToUrl(_root.folder)
         nameFilters:    _root.nameFilters ? _root.nameFilters : []
         title:          _root.title
@@ -141,6 +142,7 @@ Item {
 
     FolderDialog {
         id:             fullFolderDialog
+        options:        Qt.locale().name.startsWith("zh") ? FolderDialog.DontUseNativeDialog : 0
         currentFolder:  QGCFileDialogController.localFileToUrl(_root.folder)
         title:          _root.title
 
@@ -300,11 +302,11 @@ Item {
                 }
 
                 Repeater {
-                    id:     fileRepeater
+                    id:     saveFileRepeater
                     model:  QGCFileDialogController.getFiles(folder, [ _rgExtensions ])
 
                     FileButton {
-                        id:             fileButton
+                        id:             saveFileButton
                         anchors.left:   parent.left
                         anchors.right:  parent.right
                         text:           modelData
@@ -316,22 +318,22 @@ Item {
 
                         onHamburgerClicked: {
                             highlight = true
-                            hamburgerMenu.fileToDelete = QGCFileDialogController.fullyQualifiedFilename(folder, modelData)
-                            hamburgerMenu.popup()
+                            saveHamburgerMenu.fileToDelete = QGCFileDialogController.fullyQualifiedFilename(folder, modelData)
+                            saveHamburgerMenu.popup()
                         }
 
                         QGCMenu {
-                            id: hamburgerMenu
+                            id: saveHamburgerMenu
 
                             property string fileToDelete
 
-                            onAboutToHide: fileButton.highlight = false
+                            onAboutToHide: saveFileButton.highlight = false
 
                             QGCMenuItem {
                                 text:           qsTr("Delete")
                                 onTriggered: {
-                                    QGCFileDialogController.deleteFile(hamburgerMenu.fileToDelete)
-                                    fileRepeater.model = QGCFileDialogController.getFiles(folder, [ _rgExtensions ])
+                                    QGCFileDialogController.deleteFile(saveHamburgerMenu.fileToDelete)
+                                    saveFileRepeater.model = QGCFileDialogController.getFiles(folder, [ _rgExtensions ])
                                 }
                             }
                         }

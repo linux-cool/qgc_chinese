@@ -11,6 +11,7 @@ class AppSettingsTest : public UnitTest
 private slots:
     void _preferredFirmwareClassEnumFiltered();
     void _offlineEditingFirmwareClassEnumFiltered();
+    void _chineseDefaultAndDisplayText();
 
 private:
     void _verifyFirmwareClassEnumFiltered(Fact *fact);

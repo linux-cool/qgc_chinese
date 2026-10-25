@@ -28,18 +28,13 @@ static_assert(static_cast<int>(MapProvider::CustomMap)        == static_cast<int
 // QtLocation expects MapIds to start at 1 and be sequential.
 int MapProvider::_mapIdIndex = 1;
 
-MapProvider::MapProvider(
-    const QString &mapName,
-    const QString &referrer,
-    const QString &imageFormat,
-    quint32 averageSize,
-    MapStyle mapStyle)
+MapProvider::MapProvider(const QString& mapName, const QString& referrer, const QString& imageFormat,
+                         quint32 averageSize, MapStyle mapStyle)
     : _mapName(mapName)
     , _referrer(referrer)
     , _imageFormat(imageFormat)
     , _averageSize(averageSize)
     , _mapStyle(mapStyle)
-    , _language(!QLocale::system().uiLanguages().isEmpty() ? QLocale::system().uiLanguages().constFirst() : "en")
     , _mapId(_mapIdIndex++)
 {
     // qCDebug(MapProviderLog) << Q_FUNC_INFO << this << _mapId;
@@ -48,6 +43,11 @@ MapProvider::MapProvider(
 MapProvider::~MapProvider()
 {
     // qCDebug(MapProviderLog) << Q_FUNC_INFO << this << _mapId;
+}
+
+QString MapProvider::_mapLanguage()
+{
+    return QLocale().language() == QLocale::C ? QStringLiteral("en") : QLocale().name().replace('_', '-');
 }
 
 QUrl MapProvider::getTileURL(int x, int y, int zoom) const

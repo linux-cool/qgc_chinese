@@ -93,7 +93,7 @@ SetupPage {
                     id:             helpText
                     width:          parent.width - applyButton.width - 5
                     text:           (controller.currentVehicleName != "" ?
-                                         qsTr("You've connected a %1.").arg(controller.currentVehicleName) :
+                                         qsTr("You've connected a %1.").arg(qsTranslate("Airframe", controller.currentVehicleName)) :
                                          qsTr("Airframe is not set.")) +
                                     qsTr(" To change this configuration, select the desired airframe below then click 'Apply and Restart'.")
                     font.bold:      true
@@ -157,7 +157,7 @@ SetupPage {
 
                         QGCLabel {
                             id:     title
-                            text:   modelData.name
+                            text:   qsTranslate("Airframe", modelData.name)
                         }
 
                         Rectangle {
@@ -204,6 +204,8 @@ SetupPage {
                                 anchors.right:      parent.right
                                 model:              modelData.airframes
                                 textRole:           "text"
+                                translationContext: "Airframe"
+                                sizeToContents:     true
 
                                 Component.onCompleted: {
                                     if (airframeCheckBox.checked) {

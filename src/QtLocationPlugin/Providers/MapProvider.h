@@ -64,6 +64,7 @@ public:
                                     double bottomRightLat) const;
 
 protected:
+    static QString _mapLanguage();
     QString _tileXYToQuadKey(int tileX, int tileY, int levelOfDetail) const;
     int _getServerNum(int x, int y, int max) const;
 
@@ -74,7 +75,6 @@ protected:
     const QString _imageFormat;
     const quint32 _averageSize;
     const MapStyle _mapStyle;
-    const QString _language;
     const int _mapId;
 
 private:
